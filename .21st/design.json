@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "project": {
+    "name": "threadflow",
+    "productType": "multi-account Threads publishing SaaS",
+    "stack": ["React", "TypeScript", "Vite", "Tailwind CSS", "Radix UI"]
+  },
+  "sources": {
+    "tokens": [],
+    "components": [],
+    "assets": [],
+    "instructions": []
+  },
+  "design": {
+    "colorMode": "light",
+    "colors": {"ink":"#18232D","canvas":"#F6F8FA","surface":"#FFFFFF","accent":"#377B59","accentSoft":"#EAF3EE","border":"#E5E9ED"},
+    "typography": {"family":"Plus Jakarta Sans","fallback":"system-ui, sans-serif"},
+    "spacing": {},
+    "radius": {},
+    "shadows": {},
+    "motion": {},
+    "density": "comfortable"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": ["Radix Dialog", "Radix Popover", "React DayPicker", "FullCalendar", "Sonner"],
+    "patterns": ["account cards with accessible selection", "mobile calendar agenda", "navigation drawer", "per-target publication results"]
+  },
+  "constraints": {
+    "must": ["visible keyboard focus", "responsive at 390px", "loading, empty and error states", "working API actions"],
+    "avoid": ["decorative charts", "inactive placeholder controls", "AI generation in MVP"]
+  },
+  "decisions": ["Restrained leaf accent and slate typography; account identity and post content carry the visual hierarchy."],
+  "evidence": ["21st search: hardik0110/mini-calendar and ruixen.ui/calendar-planner; FullCalendar and DayPicker selected for complete scheduling interactions."],
+  "generatedAt": "2026-10-04T18:20:01.176Z"
+}

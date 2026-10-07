@@ -1,0 +1,42 @@
+{
+  "name": "threadflow",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "npm run setup && concurrently -k -n api,web -c cyan,magenta \"npm run dev -w @threadflow/api\" \"npm run dev -w @threadflow/web\"",
+    "build": "npm run build -w @threadflow/shared && npm run build -w @threadflow/api && npm run build -w @threadflow/web",
+    "start:api": "npm run start -w @threadflow/api",
+    "lint": "eslint .",
+    "typecheck": "npm run build -w @threadflow/shared && npm run typecheck --workspaces --if-present",
+    "test": "npm run test -w @threadflow/api && tsx --test scripts/timezone.test.ts",
+    "verify:api": "node scripts/verify-api.mjs",
+    "verify:sessions": "tsx scripts/verify-sessions.mts",
+    "browser:install": "playwright install chromium",
+    "db:generate": "node scripts/database.mjs generate",
+    "db:migrate": "node scripts/database.mjs migrate",
+    "db:studio": "node scripts/database.mjs studio"
+  },
+  "overrides": {
+    "effect": "^3.20.0",
+    "deepmerge-ts": "^8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "~5.9.3",
+    "eslint": "^9.39.0",
+    "@eslint/js": "^9.39.0",
+    "typescript-eslint": "^8.46.0",
+    "globals": "^16.4.0"
+  },
+  "allowScripts": {
+    "@prisma/client@6.19.0": true,
+    "prisma@6.19.0": true,
+    "@prisma/engines@6.19.0": true,
+    "esbuild@0.28.2": true
+  }
+}

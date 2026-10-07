@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  name         String
+  passwordHash String
+  timezone     String          @default("UTC")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  accounts     SocialAccount[]
+  posts        Post[]
+  sessions     Session[]
+  oauthStates  OAuthState[]
+  proxies      AccountProxy[]
+}
+
+model AccountProxy {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username    String
+  host        String
+  port        Int
+  protocol    String   @default("http")
+  login       String
+  password    String
+  status      String   @default("unchecked")
+  checkedAt   DateTime?
+  directIp    String?
+  exitIp      String?
+  error       String?
+  updatedAt   DateTime @updatedAt
+  @@unique([userId, username])
+  @@unique([userId, host, port])
+}
+
+model Session {
+  id        String       @id @default(cuid())
+  tokenHash String       @unique
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime     @default(now())
+  oauthStates OAuthState[]
+  @@index([expiresAt])
+}
+
+model OAuthState {
+  id          String   @id @default(cuid())
+  stateHash   String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId   String
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  reconnectId String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  @@index([expiresAt])
+}
+
+model SocialAccount {
+  id                  String       @id @default(cuid())
+  userId              String
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider            String
+  providerAccountId   String
+  username            String
+  displayName         String
+  avatarUrl           String?
+  accessToken         String?
+  refreshToken        String?
+  tokenExpiresAt      DateTime?
+  status              String       @default("connected")
+  sessionVerifiedAt   DateTime?
+  sessionVerificationStatus String @default("unknown")
+  sessionVerificationError String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  targets             PostTarget[]
+  @@unique([userId, provider, providerAccountId])
+  @@index([userId, status])
+}
+
+model Post {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String
+  status      String       @default("draft")
+  scheduledAt DateTime?
+  timezone    String       @default("UTC")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  targets     PostTarget[]
+  @@index([userId, status, scheduledAt])
+}
+
+model PostTarget {
+  id                String        @id @default(cuid())
+  postId            String
+  post              Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  socialAccountId   String
+  socialAccount     SocialAccount @relation(fields: [socialAccountId], references: [id])
+  status            String        @default("draft")
+  externalPostId    String?
+  publishedAt       DateTime?
+  attempts          Int           @default(0)
+  retryCycleAttempts Int          @default(0)
+  lastAttemptAt     DateTime?
+  errorMessage      String?
+  nextAttemptAt     DateTime?
+  claimToken        String?
+  claimExpiresAt    DateTime?
+  containerId       String?
+  publishStartedAt  DateTime?
+  publishUncertain  Boolean       @default(false)
+  @@unique([postId, socialAccountId])
+  @@index([status, nextAttemptAt])
+  @@index([claimExpiresAt])
+}

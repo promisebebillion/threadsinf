@@ -1,0 +1,4 @@
+project_id = "asglentznxfmjtnydijr"
+
+[functions.threads-oauth-callback]
+verify_jwt = false
